@@ -19,6 +19,13 @@ alias rm='rm -v' # Used to be rm -iv but that was too annoying
 # Internal use functions and variables
 cores=$(getconf _NPROCESSORS_ONLN)
 
+prompts=( 
+  "\[\e[36;1m\]\h:\[\e[32;1m\]\w$ \[\e[0m\]"
+  "\n\[\033[0;34m\]\u@\h \D{%F %T}\[\033[0m\]\n\[\033[0;32m\][\$?] \w\[\033[0m\] \n[\!]->"
+  "\u@\h:\w\$"
+)
+promptsAvailable=${#prompts[@]}
+
 function disk-space-check()
 {
   #fsExclusionList="^Filesystem|^cdrom|^cgroup|^proc|^fusectl|^sunrpc|^securityfs|^pstore|^sys"
@@ -122,9 +129,22 @@ function sys-health()
          "${memAvailable}"  "${memTotal}"  "${memPercentFree}"
 }
 
-function cycle-prompt() 
+function set-prompt() 
 {
-  export PS1="\n\[\033[0;34m\]\u@\h \D{%F %T}\[\033[0m\]\n\[\033[0;32m\][\$?] \w\[\033[0m\] \n[\!]->"
+  if [ $# -eq 0 ]; then
+    printf "Usage: set-prompt prompt-index\n"
+    printf "Ex: set-prompt 1\n"
+    return
+  fi
+ 
+  promptIndex=$1
+  maxPromptIndex=$(($promptsAvailable-1))
+  if [[ $promptIndex -gt $maxPromptIndex  || $promptIndex -lt 0 ]]; then
+    printf "Invalid prompt index %d\tValid indexes are 0 to %s\n" \
+      $promptIndex ${maxPromptIndex}
+  else
+    export PS1=${prompts[${promptIndex}]}
+  fi
 }
 
 function help()
@@ -137,7 +157,7 @@ function help()
   printf "  sys-load - Short and quick snapshot of system load\n" 
   printf "  sys-load2 - Slightly more detailed snapshot of system load\n" 
   printf "  sys-health - Snapshot of system health\n" 
-  printf "  cycle-prompt - cycle through available system prompts\n" 
+  printf "  set-prompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
   printf "Aliases\n" 
   printf "  new = ls -larth\n" 
@@ -154,8 +174,6 @@ function help()
 # Set up prompts
 #Simple PS1 prompt with some color
 PS1="\[\e[36;1m\]\h:\[\e[32;1m\]\w$ \[\e[0m\]"
-# More complex, multi-line colored prompt
-#PS1="\n\[\033[0;34m\]\u@\h \D{%F %T}\[\033[0m\]\n\[\033[0;32m\][\$?] \w\[\033[0m\] \n[\!]->"
 
 #
 # Set history config
@@ -168,7 +186,17 @@ shopt -s histappend
 # Uncomment the following line if you don't like systemctl's auto-paging feature
 # export SYSTEMD_PAGER=
 
+#Define less terminal capabilities so less and man pages are easier to read.
+export LESS_TERMCAP_mb=$'\E[01;31m'
+export LESS_TERMCAP_md=$'\E[01;31m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[01;44;33m'
+export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[01;32m'
+
 export JAVA_HOME=/usr
 
 export EDITOR="/usr/bin/vim"
+
 
