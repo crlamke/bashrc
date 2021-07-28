@@ -10,7 +10,7 @@ fi
 alias new="ls -larth"
 alias mew="ls -larth"
 alias old="ls -lath"
-alias h="history 100 | sort -rn | more"
+alias h="history 100 | sort -rn | less"
 alias bashreload="source ~/.bashrc && echo bash config reloaded"
 alias sudo="sudo "
 alias df="df -Tha --total"
@@ -21,8 +21,9 @@ cores=$(getconf _NPROCESSORS_ONLN)
 
 prompts=( 
   "\[\e[36;1m\]\h:\[\e[32;1m\]\w$ \[\e[0m\]"
-  "\n\[\033[0;34m\]\u@\h \D{%F %T}\[\033[0m\]\n\[\033[0;32m\][\$?] \w\[\033[0m\] \n[\!]->"
+  "\n\[\033[01;32m\]\u@\h \D{%F %T}\[\033[0m\]\n\[\033[0;32m\][\$?] \w\[\033[0m\] \n[\!]->"
   "\u@\h:\w\$"
+  "\[$(tput bold)$(tput setb 4)$(tput setaf 7)\]\u@\h:\w $ \[$(tput sgr0)\]"
 )
 promptsAvailable=${#prompts[@]}
 
