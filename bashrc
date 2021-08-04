@@ -29,9 +29,15 @@ promptsAvailable=${#prompts[@]}
 
 function disk-space-check()
 {
-  #fsExclusionList="^Filesystem|^cdrom|^cgroup|^proc|^fusectl|^sunrpc|^securityfs|^pstore|^sys"
-  df -H | grep -vE "^Filesystem|^cdrom|^cgroup|^proc|^fusectl|^sunrpc|^securityfs|^pstore|^sys}" \
-    | awk '{ print $1 "\t\t"  $6 "\t "  $7 }'
+  printf "***Disk Space***\n%% Free\tMounted On\tFilesystem\n"
+  IFS=$'\n' 
+  df -h | grep -vE \
+    "^Filesystem|\/sys\/|^cdrom|^cgroup|^proc|^fusectl|^sunrpc|^securityfs|^pstore|^sys" \
+    | awk '{ print $6 "\t"$7"\t"$1 }' | \
+    while read -r line;
+    do
+      printf "result = %s\n" $line
+    done
 }
 
 function sys-load-check()
@@ -161,14 +167,14 @@ function help()
   printf "  set-prompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
   printf "Aliases\n" 
-  printf "  new = ls -larth\n" 
-  printf "  old = ls -lath\n" 
-  printf "  mew = ls -larth\n" 
-  printf "  h = history 100 | sort -rn | more\n" 
-  printf "  sudo = \"sudo \"\n" 
-  printf "  bashreload = source ~/.bashrc && echo bash config reloaded\n" 
-  printf "  df = df -Tha --total\n" 
-  printf "  rm = rm -v #Used to be rm -iv but that was too annoying \n" 
+  printf "  new = "ls -larth\" - list all files and sort by most recently changed\n" 
+  printf "  old = "ls -lath\" - list all files and sort by least recently changed\n" 
+  printf "  mew = \"ls -larth\" - same as new alias but a common misspelling :-)\n" 
+  printf "  h = \"history 100 | sort -rn | less\" - list history with less cmd for easy navigation\n" 
+  printf "  sudo = \"sudo \" - add a space to avoid a common typo\n" 
+  printf "  bashreload = \"source ~/.bashrc && echo bash config reloaded\" - reload config without new shell\n" 
+  printf "  df = \"df -Tha --total\" - enhance df with good defaults\n" 
+  printf "  rm = \"rm -v\" - verbose delete \n" 
 }
 
 
