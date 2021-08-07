@@ -13,7 +13,6 @@ alias old="ls -lath"
 alias h="history 100 | sort -rn | less"
 alias bashreload="source ~/.bashrc && echo bash config reloaded"
 alias sudo="sudo "
-alias df="df -Tha --total"
 alias rm='rm -v' # Used to be rm -iv but that was too annoying
 
 # Internal use functions and variables
@@ -173,7 +172,6 @@ function help()
   printf "  h = \"history 100 | sort -rn | less\" - list history with less cmd for easy navigation\n" 
   printf "  sudo = \"sudo \" - add a space to avoid a common typo\n" 
   printf "  bashreload = \"source ~/.bashrc && echo bash config reloaded\" - reload config without new shell\n" 
-  printf "  df = \"df -Tha --total\" - enhance df with good defaults\n" 
   printf "  rm = \"rm -v\" - verbose delete \n" 
 }
 
