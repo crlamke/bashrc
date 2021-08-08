@@ -17,6 +17,13 @@ alias rm='rm -v' # Used to be rm -iv but that was too annoying
 
 # Internal use functions and variables
 cores=$(getconf _NPROCESSORS_ONLN)
+NL=$'\n'
+TAB=$'\t'
+REDTEXT="\033[31;1m"
+BLUETEXT="\033[34;1m"
+GREENTEXT="\033[32;1m"
+YELLOWTEXT="\033[33;1m"
+COLOREND="\033[0m"
 
 prompts=( 
   "\[\e[36;1m\]\h:\[\e[32;1m\]\w$ \[\e[0m\]"
@@ -26,36 +33,27 @@ prompts=(
 )
 promptsAvailable=${#prompts[@]}
 
+# Set up functions
 function disk-space-check()
 {
-  printf "***Disk Space***\n%% Free\tMounted On\tFilesystem\n"
-  IFS=$'\n' 
-  df -h | grep -vE \
-    "^Filesystem|\/sys\/|^cdrom|^cgroup|^proc|^fusectl|^sunrpc|^securityfs|^pstore|^sys" \
-    | awk '{ print $6 "\t"$7"\t"$1 }' | \
-    while read -r line;
-    do
-      printf "result = %s\n" $line
-    done
+  printf "%s\n" "***Disk Space***"
+  printf "%s" "% Used${TAB}Size${TAB}Mounted On${TAB}${TAB}Filesystem${NL}"
+  IFS=" "
+  while read -r fileSystem size used avail percentUsed mountedOn
+  do
+    usedInt=$(sed 's/%//' <<< $percentUsed)
+    #usedInt=$(($usedInt + 60)) # Used to test logic below and color printing
+    if [[ $usedInt -ge 90 ]]; then 
+      textColor=$REDTEXT
+    elif [[ $usedInt -ge 70 ]]; then 
+      textColor=$YELLOWTEXT
+    else
+      textColor=$GREENTEXT
+    fi
+    printf "%b%s%b\n" "$textColor" "${percentUsed}${TAB}${size}${TAB} ${mountedOn}${TAB}${TAB}${fileSystem}" "$COLOREND"
+  done <<< $(df -khP | sed '1d')
 }
 
-function sys-load-check()
-{
-  oneMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $1 * 100 / c}')
-  fiveMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $2 * 100 / c}')
-  fifteenMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $3 * 100 / c}')
-}
-
-function mem-load-check()
-{
-  memAvailable=$(grep 'MemAvailable:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memTotal=$(grep 'MemTotal:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memPercentFree=$((${memAvailable} * 100 / ${memTotal}))
-}
-
-# Set up functions
 function back() 
 {
     echo "Copying $1 to $1.bak"
@@ -95,44 +93,9 @@ function sys-load()
   memTotal=$(grep 'MemTotal:' /proc/meminfo | \
                awk '{print int($2 / 1024)}')
   memPercentFree=$((${memAvailable} * 100 / ${memTotal}))
-  printf "60 Sec\t5 Min\t15 Min\tFree RAM\t\n"
-  printf " %s%%\t %s%%\t %s%%\t  %s%%\n" \
-         $oneMinuteLoad $fiveMinuteLoad $fifteenMinuteLoad $memPercentFree
-}
-
-function sys-load2() 
-{
-  cores=$(getconf _NPROCESSORS_ONLN)
-  oneMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $1 * 100 / c}')
-  fiveMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $2 * 100 / c}')
-  fifteenMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $3 * 100 / c}')
-  memAvailable=$(grep 'MemAvailable:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memTotal=$(grep 'MemTotal:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memPercentFree=$((${memAvailable} * 100 / ${memTotal}))
-  printf "Sys Load:  60 Sec-%s%%  5 Min-%s%%  15 Min-%s%%\n" \
-         $oneMinuteLoad $fiveMinuteLoad $fifteenMinuteLoad
-  printf "RAM:  Avail-%sMB  Total-%sMB  Free-%d%%\n" \
-         "${memAvailable}"  "${memTotal}"  "${memPercentFree}"
-
-}
-
-function sys-health() 
-{
-  cores=$(getconf _NPROCESSORS_ONLN)
-  oneMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $1 * 100 / c}')
-  fiveMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $2 * 100 / c}')
-  fifteenMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $3 * 100 / c}')
-  memAvailable=$(grep 'MemAvailable:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memTotal=$(grep 'MemTotal:' /proc/meminfo | \
-               awk '{print int($2 / 1024)}')
-  memPercentFree=$((${memAvailable} * 100 / ${memTotal}))
-  printf "Sys Load:  60 Sec-%s%%  5 Min-%s%%  15 Min-%s%%\n" \
-         $oneMinuteLoad $fiveMinuteLoad $fifteenMinuteLoad
-  printf "RAM:  Avail-%sMB  Total-%sMB  Free-%d%%\n" \
-         "${memAvailable}"  "${memTotal}"  "${memPercentFree}"
+  printf "60 Sec\t5 Min\t15 Min\tFree RAM  Total RAM\n"
+  printf " %s%%\t %s%%\t %s%%\t  %s%%      %sMB\n" \
+         $oneMinuteLoad $fiveMinuteLoad $fifteenMinuteLoad $memPercentFree $memTotal
 }
 
 function set-prompt() 
@@ -157,12 +120,11 @@ function help()
 {
   printf "\n***** .bashrc help *****\n" 
   printf "Functions\n" 
+  printf "  disk-space-check - disk space snapshot\n" 
   printf "  back FILE - back up file to file.bak\n" 
   printf "  find-list PATH \"SEARCH-PATTERN\" - find files and print path and stats\n" 
   printf "  find-do PATH \"SEARCH-PATTERN\" \"COMMAND\" - find files and print path and stats\n" 
   printf "  sys-load - Short and quick snapshot of system load\n" 
-  printf "  sys-load2 - Slightly more detailed snapshot of system load\n" 
-  printf "  sys-health - Snapshot of system health\n" 
   printf "  set-prompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
   printf "Aliases\n" 
