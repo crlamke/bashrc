@@ -13,7 +13,7 @@ alias old="ls -lath"
 alias h="history 100 | sort -rn | less"
 alias bashreload="source ~/.bashrc && echo bash config reloaded"
 alias sudo="sudo "
-alias rm='rm -v' # Used to be rm -iv but that was too annoying
+alias rm='rm -v'
 
 # Internal use functions and variables
 cores=$(getconf _NPROCESSORS_ONLN)
