@@ -34,7 +34,7 @@ prompts=(
 promptsAvailable=${#prompts[@]}
 
 # Set up functions
-function disk-space-check()
+function diskspace()
 {
   printf "%s\n" "***Disk Space***"
   printf "%s" "% Used${TAB}Size${TAB}Mounted On${TAB}${TAB}Filesystem${NL}"
@@ -50,7 +50,7 @@ function disk-space-check()
     else
       textColor=$GREENTEXT
     fi
-    printf "%b%s%b\n" "$textColor" "${percentUsed}${TAB}${size}${TAB} ${mountedOn}${TAB}${TAB}${fileSystem}" "$COLOREND"
+    printf "%b%s%b%s\n" "$textColor" "${percentUsed}" "$COLOREND" "${TAB}${size}${TAB}${fileSystem}${TAB}${TAB}${mountedOn}" 
   done <<< $(df -khP | sed '1d')
 }
 
@@ -76,13 +76,13 @@ function find-do()
   if [[ $# -eq 3 ]]; then
     LC_ALL=C find $1 -type f -name "$2" -exec $3 {} + 2> /dev/null
   else
-    printf "Usage: find-do starting-directory \"search-pattern\" command-to-run-on-match\n"
+    printf "Usage: find-do starting-directory \"search-pattern\" \"command-to-run-on-match\"\n"
     printf "Ex: find-do ~/ \"*.cfg\" ls \n"
   fi
 }
 
 
-function sys-load() 
+function sysload() 
 {
   cores=$(getconf _NPROCESSORS_ONLN)
   oneMinuteLoad=$(cat /proc/loadavg | awk -v c=$cores '{print $1 * 100 / c}')
@@ -120,11 +120,11 @@ function help()
 {
   printf "\n***** .bashrc help *****\n" 
   printf "Functions\n" 
-  printf "  disk-space-check - disk space snapshot\n" 
+  printf "  diskspace - disk space snapshot\n" 
   printf "  back FILE - back up file to file.bak\n" 
   printf "  find-list PATH \"SEARCH-PATTERN\" - find files and print path and stats\n" 
   printf "  find-do PATH \"SEARCH-PATTERN\" \"COMMAND\" - find files and print path and stats\n" 
-  printf "  sys-load - Short and quick snapshot of system load\n" 
+  printf "  sysload - Short and quick snapshot of system load\n" 
   printf "  set-prompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
   printf "Aliases\n" 
