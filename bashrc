@@ -1,4 +1,6 @@
 # .bashrc
+# Copyright 2021 Christopher R Lamke. MIT License
+# Project Home: https://github.com/crlamke/bashrc
 #set -x
 
 # Source global definitions
@@ -98,11 +100,11 @@ function sysload()
          $oneMinuteLoad $fiveMinuteLoad $fifteenMinuteLoad $memPercentFree $memTotal
 }
 
-function set-prompt() 
+function setprompt() 
 {
   if [ $# -eq 0 ]; then
-    printf "Usage: set-prompt prompt-index\n"
-    printf "Ex: set-prompt 1\n"
+    printf "Usage: setprompt prompt-index\n"
+    printf "Ex: setprompt 1\n"
     return
   fi
  
@@ -125,7 +127,7 @@ function help()
   printf "  find-list PATH \"SEARCH-PATTERN\" - find files and print path and stats\n" 
   printf "  find-do PATH \"SEARCH-PATTERN\" \"COMMAND\" - find files and print path and stats\n" 
   printf "  sysload - Short and quick snapshot of system load\n" 
-  printf "  set-prompt INDEX - set the bash prompt\n" 
+  printf "  setprompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
   printf "Aliases\n" 
   printf "  new = \"ls -larth\" - list all files and sort by most recently changed\n" 
@@ -165,5 +167,3 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export JAVA_HOME=/usr
 
 export EDITOR="/usr/bin/vim"
-
-
