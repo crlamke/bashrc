@@ -1,6 +1,4 @@
 # .bashrc
-# Copyright 2021 Christopher R Lamke. MIT License
-# Project Home: https://github.com/crlamke/bashrc
 #set -x
 
 # Source global definitions
@@ -167,3 +165,5 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 export JAVA_HOME=/usr
 
 export EDITOR="/usr/bin/vim"
+
+
