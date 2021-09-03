@@ -18,5 +18,5 @@ I'm taking bug reports and suggestions for functionality. The easiest way to con
 3. Add dupe function that creates duplicate of a set of files, preserving their attributes
 ## Requirements to run script 
 1. This script requires only bash v4.2 or newer in a full Linux environment. It's tested on CentOS 7 and Ubuntu 20 LTS. 
-2. This script may partially work on limited environments like cygwin and GitBash, but it hasn't been tested.
+2. This script may partially work on limited environments like cygwin and GitBash (I use it with GitBash), but no guarantees.
 3.   
