@@ -1,5 +1,7 @@
 # .bashrc
-#set -x
+#Project Home: https://github.com/crlamke/bashrc
+#Copyright   : 2021 Christopher R Lamke
+#License     : MIT - See https://opensource.org/licenses/MIT
 
 # Source global definitions
 if [ -f /etc/bashrc ]; then
