@@ -58,9 +58,20 @@ function diskspace()
 
 function back() 
 {
-    echo "Copying $1 to $1.bak"
-    cp $1 $1.bak
-    echo "Done"
+  if [[ $# -eq 1 ]]; then
+    if [ -f $1 ]; then
+      backupDTG=$(date +"%Y%m%d-%H%M%S%Z")
+      backupName="$1.bak.$backupDTG"  
+      echo "Copying $1 to $backupName"
+      cp $1 $backupName
+      echo "Done"
+    else
+      printf "$1 not found\n"
+    fi
+  else
+    printf "Usage: back file-name\n"
+    printf "Ex: back startup.cfg\n"
+  fi
 }
 
 function find-list() 
@@ -123,7 +134,7 @@ function help()
   printf "\n***** .bashrc help *****\n" 
   printf "Functions\n" 
   printf "  diskspace - disk space snapshot\n" 
-  printf "  back FILE - back up file to file.bak\n" 
+  printf "  back FILE - back up file to file.bak.date-time\n" 
   printf "  find-list PATH \"SEARCH-PATTERN\" - find files and print path and stats\n" 
   printf "  find-do PATH \"SEARCH-PATTERN\" \"COMMAND\" - find files and print path and stats\n" 
   printf "  sysload - Short and quick snapshot of system load\n" 
