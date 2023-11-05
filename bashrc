@@ -1,6 +1,6 @@
 # .bashrc
 #Project Home: https://github.com/crlamke/bashrc
-#Copyright   : 2021 Christopher R Lamke
+#Copyright   : 2023 Christopher R Lamke
 #License     : MIT - See https://opensource.org/licenses/MIT
 
 # Source global definitions
@@ -74,27 +74,6 @@ function back()
   fi
 }
 
-function find-list() 
-{
-  if [[ $# -eq 2 ]]; then
-    LC_ALL=C find $1 -type f -name "$2" -exec ls -la {} + 2> /dev/null
-  else
-    printf "Usage: find-list starting-directory \"search-pattern\"\n"
-    printf "Ex: find-list ~/ \"*.cfg\"\n"
-  fi
-}
-
-function find-do() 
-{
-  if [[ $# -eq 3 ]]; then
-    LC_ALL=C find $1 -type f -name "$2" -exec $3 {} + 2> /dev/null
-  else
-    printf "Usage: find-do starting-directory \"search-pattern\" \"command-to-run-on-match\"\n"
-    printf "Ex: find-do ~/ \"*.cfg\" ls \n"
-  fi
-}
-
-
 function sysload() 
 {
   cores=$(getconf _NPROCESSORS_ONLN)
@@ -135,8 +114,6 @@ function help()
   printf "Functions\n" 
   printf "  diskspace - disk space snapshot\n" 
   printf "  back FILE - back up file to file.bak.date-time\n" 
-  printf "  find-list PATH \"SEARCH-PATTERN\" - find files and print path and stats\n" 
-  printf "  find-do PATH \"SEARCH-PATTERN\" \"COMMAND\" - find files and print path and stats\n" 
   printf "  sysload - Short and quick snapshot of system load\n" 
   printf "  setprompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
