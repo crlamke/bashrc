@@ -1,6 +1,6 @@
 # .bashrc
 #Project Home: https://github.com/crlamke/bashrc
-#Copyright   : 2023 Christopher R Lamke
+#Copyright   : 2024 Christopher R Lamke
 #License     : MIT - See https://opensource.org/licenses/MIT
 
 # Source global definitions
@@ -54,6 +54,37 @@ function diskspace()
     fi
     printf "%b%s%b%s\n" "$textColor" "${percentUsed}" "$COLOREND" "${TAB}${size}${TAB}${fileSystem}${TAB}${TAB}${mountedOn}" 
   done <<< $(df -khP | sed '1d')
+}
+
+function cfind()
+{
+  if [[ $# -eq 2 ]]; then
+    searchResultsFile="/tmp/cfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
+    printf "Searching from $1 for pattern \"$2\"\n"
+    printf "File System search for \"$2\" starting at \"$1\"\n" > $searchResultsFile
+    find $1 -iname "$2" 2>/dev/null | tee -a $searchResultsFile
+    printf "Search from $1 for pattern \"$2\" complete\n" >> $searchResultsFile
+    printf "Search results were written to $searchResultsFile\n"
+  else
+    printf "Usage: cfind search-path-root file-name-pattern\n"
+    printf "Ex: cfind ~/dev config.xml\n"
+  fi
+}
+
+function hfind() 
+{
+  if [[ $# -eq 1 ]]; then
+    searchResultsFile="/tmp/hfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
+    printf "Searching command history for \"$1\"\n"
+    printf "Results will be written to $searchResultsFile\n"
+    printf "Command history for \"$1\"\n" > $searchResultsFile
+    history | grep "$1" 2>/dev/null >> $searchResultsFile
+    printf "Command history search for \"$1\" complete\n" >> $searchResultsFile
+    cat $searchResultsFile | more
+  else
+    printf "Usage: hfind \"search-string\"\n"
+    printf "Ex: hfind yum\n"
+  fi
 }
 
 function back() 
@@ -114,6 +145,8 @@ function help()
   printf "Functions\n" 
   printf "  diskspace - disk space snapshot\n" 
   printf "  back FILE - back up file to file.bak.date-time\n" 
+  printf "  cfind path pattern - search from file system path for pattern\n" 
+  printf "  hfind pattern - search command history for pattern\n" 
   printf "  sysload - Short and quick snapshot of system load\n" 
   printf "  setprompt INDEX - set the bash prompt\n" 
   printf "  help - This function\n" 
