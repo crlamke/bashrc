@@ -8,6 +8,12 @@ if [ -f /etc/bashrc ]; then
   . /etc/bashrc
 fi
 
+# Start with "more" as default pager, but use "less" if available.
+pager="more"
+if command -v less > /dev/null 2>&1; then
+  pager="less"
+fi
+
 # Set up aliases
 alias new="ls -larth"
 alias mew="ls -larth"
@@ -80,7 +86,8 @@ function hfind()
     printf "Command history for \"$1\"\n" > $searchResultsFile
     history | grep "$1" 2>/dev/null >> $searchResultsFile
     printf "Command history search for \"$1\" complete\n" >> $searchResultsFile
-    cat $searchResultsFile | more
+    cat $searchResultsFile | $pager
+    printf "Results were written to $searchResultsFile\n"
   else
     printf "Usage: hfind \"search-string\"\n"
     printf "Ex: hfind yum\n"
