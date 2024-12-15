@@ -24,6 +24,7 @@ alias sudo="sudo "
 alias rm='rm -v'
 
 # Internal use functions and variables
+resultDest="/tmp"
 cores=$(getconf _NPROCESSORS_ONLN)
 NL=$'\n'
 TAB=$'\t'
@@ -62,32 +63,33 @@ function diskspace()
   done <<< $(df -khP | sed '1d')
 }
 
-function cfind()
+function sfind()
 {
   if [[ $# -eq 2 ]]; then
-    searchResultsFile="/tmp/cfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
-    printf "Searching from $1 for pattern \"$2\"\n"
-    printf "File System search for \"$2\" starting at \"$1\"\n" > $searchResultsFile
-    find $1 -iname "$2" 2>/dev/null | tee -a $searchResultsFile
-    printf "Search from $1 for pattern \"$2\" complete\n" >> $searchResultsFile
-    printf "Search results were written to $searchResultsFile\n"
+    searchResultsFile="$resultDest/sfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
+    printf "Searching file system starting at $1 for filenames matching \"$2\" pattern ...\n\n"
+    printf "*** BEGIN results of file system search starting at \"$1\" for filename matching  \"$2\" pattern ***\n" > $searchResultsFile
+    find $1 -iname "$2" 2>/dev/null >> $searchResultsFile
+    #find $1 -iname "$2" 2>/dev/null | tee -a $searchResultsFile
+    printf "*** END results of file system search starting at \"$1\" for filename matching  \"$2\" pattern ***\n" >> $searchResultsFile
+    cat $searchResultsFile
+    printf "\nSearch results were written to $searchResultsFile\n"
   else
-    printf "Usage: cfind search-path-root file-name-pattern\n"
-    printf "Ex: cfind ~/dev config.xml\n"
+    printf "Usage: sfind search-path-root file-name-pattern\n"
+    printf "Ex: sfind ~/dev config.xml\n"
   fi
 }
 
 function hfind() 
 {
   if [[ $# -eq 1 ]]; then
-    searchResultsFile="/tmp/hfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
-    printf "Searching command history for \"$1\"\n"
-    printf "Results will be written to $searchResultsFile\n"
-    printf "Command history for \"$1\"\n" > $searchResultsFile
+    searchResultsFile="$resultDest/hfind-results-$(date +"%Y%m%d-%H%M%S%Z")"
+    printf "Searching command history for \"$1\" ...\n\n"
+    printf "*** BEGIN results of command history search for \"$1\" ***\n" > $searchResultsFile
     history | grep "$1" 2>/dev/null >> $searchResultsFile
-    printf "Command history search for \"$1\" complete\n" >> $searchResultsFile
-    cat $searchResultsFile | $pager
-    printf "Results were written to $searchResultsFile\n"
+    printf "*** END results of command history search for \"$1\" ***\n" >> $searchResultsFile
+    cat $searchResultsFile
+    printf "\nResults above written to $searchResultsFile\n"
   else
     printf "Usage: hfind \"search-string\"\n"
     printf "Ex: hfind yum\n"
