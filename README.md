@@ -1,5 +1,5 @@
 # bashrc
-This is a standalone .bashrc for use when you don't want to use something more complex like my https://github.com/crlamke/bash-startup-files.
+This is a set of functions to improve CLI work efficiency with common dev and sysadmin tasks. The bashrc-ext.sh file is intended to be sourced from a user's .bashrc to get the extra functionality.
 
 ## Current functionality 
 1. Function setprompt() that allows you to select from various prompts you can easily add to the script (a few are provided)
